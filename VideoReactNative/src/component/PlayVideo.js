@@ -1,7 +1,7 @@
-import Video from 'react-native-video';
-import React, { Component } from 'react';
-import { StyleSheet, Platform, Image, Text, View, FlatList, TouchableHighlight } from 'react-native';
-import MediaControls, { PLAYER_STATES } from 'react-native-media-controls';
+import Video, { TextTrackType } from 'react-native-video';
+import React, { Component  } from 'react';
+import { StyleSheet, Platform, Image, Button, Text, View, FlatList, TouchableHighlight } from 'react-native';
+import VideoPlayer from 'react-native-video-player';
 
 
 export default class PlayVideo extends Component {
@@ -49,35 +49,75 @@ export default class PlayVideo extends Component {
 
     state = {
         src: 'http://42.116.82.124/vod/DATA/Stolen_2012/_/DASH/Stolen_2012.mpd',
-        vtt: '',
-        paused: false,
         src1: 'http://d3959tuydafzg6.cloudfront.net/1/travelogue2015.mp4',
+        src2: 'http://www.storiesinflight.com/js_videosub/jellies.mp4',
+        vtt: '',
+        srt: 'http://www.storiesinflight.com/js_videosub/jellies.srt',
+        paused: false,
         currentTime: 0,
         duration: 0,
         isFullScreen: false,
         isLoading: true,
-        playerState: PLAYER_STATES.PLAYING,
+   //     playerState: PLAYER_STATES.PLAYING,
+
+        video: { width: undefined, height: undefined, duration: undefined },
     }
 
 
-    _onPause() {
-        if (this.state.paused) {
-            this.setState({ paused: false })
-        }
-        else {
-            this.setState({ paused: true })
-        }
-
-    }
 
 
     render() {
 
 
         return (
-            <View style={{ width: '100%', height: '100%' }}>
-                <Video
-                    source={{ uri: this.state.src, type: 'mpd' }}
+            <View>
+                <Text style={{ fontSize: 22, marginTop: 22 }}>React Native Video Player</Text>
+                <VideoPlayer
+                    video={{ uri: this.state.src2 }}
+                    videoWidth = {this.state.video.width}
+                    videoHeight = { this.state.video.height}
+                    ref={
+                        r => this.player = r
+                    }
+                    textTracks={[
+                        {
+                            title: "English CC",
+                            language: "en",
+                            type: TextTrackType.SRT,
+                            uri: this.state.srt
+                        }
+                    ]}
+                    selectedTextTrack={
+                        {
+                            type : 'language',
+                            value : 'en'
+                        }
+                    }
+
+                />
+                
+                <Button
+                    onPress={() => this.player.stop()}
+                    title="Stop"
+                />
+                <Button
+                    onPress={() => this.player.pause()}
+                    title="Pause"
+                />
+                <Button
+                    onPress={() => this.player.resume()}
+                    title="Resume"
+                />
+
+
+            </View>
+        );
+    }
+}
+
+/*
+  <Video
+                    source={{ uri: this.state.src2, type: 'mp4' }}
                     ref={videoPlayer => {
                         this.videoPlayer = videoPlayer
                     }}
@@ -94,26 +134,22 @@ export default class PlayVideo extends Component {
                     onLoadStart={this.onLoadStart}
                     onProgress={this.onProgress}
                     paused={this.state.paused}
+                    textTracks={[
+                        {
+                            title: "English CC",
+                            language: "en",
+                            type: TextTrackType.SRT,
+                            uri: this.state.srt
+                        }
+                    ]}
+                    selectedTextTrack={
+                        {
+                            type : 'language',
+                            value : 'en'
+                        }
+                    }
                 />
-
-                {Platform.OS !== 'ios' && (
-                    <MediaControls
-                        duration={this.state.duration}
-                        isLoading={this.state.isLoading}
-                        mainColor="orange"
-                        onFullScreen={this.onFullScreen}
-                        onPaused={this.onPaused}
-                        onReplay={this.onReplay}
-                        onSeek={this.onSeek}
-                        onSeeking={this.onSeeking}
-                        playerState={this.state.playerState}
-                        progress={this.state.currentTime}
-                    />
-                )}
-            </View>
-        );
-    }
-}
+*/
 
 const styles = StyleSheet.create({
     backgroundVideo: {
